@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario Regalos Baby Shower de Benjamín</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-image: url('bg_baby_shower.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #4b0082;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #sobre-option {
+            background-color: #FF9800;
+        }
+        #sobre-option:hover {
+            background-color: #F57C00;
+        }
+        .sobre-icon {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        #message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Baby Shower de Benjamín Arias Rodriguez</h1>
+        <div id="welcome-message" class="form-group">
+            <p>Bienvenido, para empezar registra tu nombre y selecciona una opción:</p>
+        </div>
+        
+        <div class="form-group">
+            <label for="nombre">Tu nombre completo:</label>
+            <input type="text" id="nombre" placeholder="Ej: María González" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="regalo">Selecciona una opción:</label>
+            <select id="regalo" required>
+                <option value="" disabled selected>-- Elige una opción --</option>
+                <!-- Las opciones se cargarán con JavaScript -->
+            </select>
+        </div>
+        
+        <button id="submit-btn">Confirmar Selección</button>
+        
+        <div id="message"></div>
+    </div>
+
+    <!-- Botón de acceso admin -->
+    <div style="text-align: center; margin-top: 20px;">
+        <button id="admin-btn" style="background: #6c757d; width: auto; padding: 8px 15px;">Acceso Admin</button>
+    </div>
+
+    <!-- Modal de Login Admin -->
+    <div id="admin-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 30px; border-radius: 10px; width: 90%; max-width: 500px;">
+            <h2 style="color: #4b0082; text-align: center;">Acceso Administrativo</h2>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px;">Usuario:</label>
+                <input type="text" id="admin-user" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px;">Contraseña:</label>
+                <input type="password" id="admin-pass" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+            </div>
+            <button id="admin-login-btn" style="background: #4b0082; color: white; width: 100%; padding: 12px; border: none; border-radius: 5px; cursor: pointer;">Ingresar</button>
+            <button id="admin-cancel-btn" style="background: #6c757d; color: white; width: 100%; padding: 12px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Panel de Administración -->
+    <div id="admin-panel" style="display: none; margin: 30px auto; max-width: 800px; background: white; padding: 20px; border-radius: 10px;">
+        <h2 style="color: #4b0082; text-align: center;">Registro Completo</h2>
+        <div style="margin-bottom: 20px; display: flex; justify-content: space-between;">
+            <button id="export-csv" style="background: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">Exportar a CSV</button>
+            <button id="refresh-btn" style="background: #17a2b8; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">Actualizar Lista</button>
+        </div>
+        <div style="overflow-x: auto;">
+            <table id="registro-table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #4b0082; color: white;">
+                        <th style="padding: 12px; text-align: left;">#</th>
+                        <th style="padding: 12px; text-align: left;">Persona</th>
+                        <th style="padding: 12px; text-align: left;">Opción Seleccionada</th>
+                        <th style="padding: 12px; text-align: left;">Fecha y Hora</th>
+                    </tr>
+                </thead>
+                <tbody id="registro-body">
+                    <!-- Los registros se cargarán aquí -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos simulada con localStorage
+        const DB_NAME = "babyShowerDB";
+        
+        // Lista de regalos (personaliza aquí)
+        const regalos = [
+            "Body talla 0-3 meses+Chupo +Pañales etapa 2", "Body talla 0-3 meses+Chupo +Pañales etapa 3", "Body talla 3-6 meses+Chupo +Pañitos",
+            "Body talla 3-6 meses+Chupo +Pañales etapa 2", "Pijama talla 0-3 meses+ Pañales etapa 2", "Pijama talla 0-3 meses+ Pañales etapa 3",
+            "Pijama talla 3-6 meses+ Pañales etapa 3", "Conjunto ropa talla 0-3 meses + Pañales etapa 2", "Conjunto ropa talla 0-3 meses + Pañitos",
+            "Conjunto ropa talla 3-6 meses + Pañales etapa 3", "Conjunto ropa talla 3-6 meses + Pañales etapa 3", "Conjunto ropa talla 6-9 meses + Pañales etapa 4",
+            "Conjunto ropa talla 6-9 meses + Pañitos", "Kit de aseo bebé + Pañales etapa 3", "Pañalera Papá + Pañales etapa 2", "Kit de aseo bebé +Pañitos",
+            "Pañalera Mamá + Pañales etapa 3", "Kit de aseo bebé + Pañales etapa 4", "Almohada de lactancia", "Cobija para bebé + Pañales etapa 3", "Cargador de bebé/Portabebé + Pañitos",
+            "2 Biberones + Pañales etapa 4", "Cobija para bebé + Pañales etapa 4", "Bañera para bebé + Pañales etapa 3", "Cobija para bebé + Pañitos","Monitor para bebé con pantalla",
+            "Coche para bebé", "Silla de bebé para carro", "Colecho de bebé", "Ruana de bebé + Pañales etapa 4",
+            "Conjunto de ropa talla 3-6 meses + Pañitos", "Conjunto de ropa talla 3-6 meses + Pañales etapa 2", "Camisetas talla 3-6 meses + Pañales etapa 2",
+            "Medias para bebé + Babero+ Pañales etapa 3", "Medias para bebé + Peluche+ Pañitos", "Baberos para bebé +Peluche+ pañales etapa 4", "Móvil para bebé", "Toallas para bebé + Pañales etapa 2",
+            "Sí no deseas llevar regalo físico, puedes llevar lluvia de sobres"
+        ];
+
+        // Inicializar la base de datos
+        function initDB() {
+            if (!localStorage.getItem(DB_NAME)) {
+                localStorage.setItem(DB_NAME, JSON.stringify({
+                    selecciones: [],
+                    usuarios: []
+                }));
+            }
+        }
+
+        // Cargar opciones disponibles
+        function cargarOpciones() {
+            const db = JSON.parse(localStorage.getItem(DB_NAME));
+            const regalosSeleccionados = db.selecciones.map(s => s.regalo);
+            const select = document.getElementById('regalo');
+            
+            // Limpiar select
+            select.innerHTML = '<option value="" disabled selected>-- Elige una opción --</option>';
+            
+            // Agregar opciones disponibles
+            regalos.forEach(regalo => {
+                // Solo mostrar opción si no ha sido seleccionada (excepto "Lluvia de Sobres")
+                if (!regalosSeleccionados.includes(regalo) || regalo === "Sí no deseas llevar regalo físico, puedes llevar lluvia de sobres") {
+                    const option = document.createElement('option');
+                    option.value = regalo;
+                    option.textContent = regalo;
+                    
+                    // Estilo especial para la opción de sobres
+                    if (regalo === "Sí no deseas llevar regalo físico, puedes llevar lluvia de sobres") {
+                        option.style.backgroundColor = "#FF9800";
+                        option.style.color = "white";
+                    }
+                    
+                    select.appendChild(option);
+                }
+            });
+        }
+
+        // Registrar selección
+        function registrarSeleccion() {
+            const nombre = document.getElementById('nombre').value.trim();
+            const regalo = document.getElementById('regalo').value;
+            const messageDiv = document.getElementById('message');
+            
+            if (!nombre || !regalo) {
+                alert("Por favor completa todos los campos.");
+                return;
+            }
+            
+            const db = JSON.parse(localStorage.getItem(DB_NAME));
+            
+            // Verificar si el regalo ya fue seleccionado (excepto "Lluvia de Sobres")
+            if (regalo !== "Sí no deseas llevar regalo físico, puedes llevar lluvia de sobres" && db.selecciones.some(s => s.regalo === regalo)) {
+                alert("Este regalo ya fue seleccionado por otra persona.");
+                return;
+            }
+            
+            // Registrar selección
+            db.selecciones.push({
+                persona: nombre,
+                regalo: regalo,
+                fecha: new Date().toISOString()
+            });
+            
+            // Registrar usuario
+            if (!db.usuarios.some(u => u.username === nombre)) {
+                db.usuarios.push({
+                    username: nombre,
+                    fechaRegistro: new Date().toISOString()
+                });
+            }
+            
+            localStorage.setItem(DB_NAME, JSON.stringify(db));
+            
+            // Mostrar mensaje de éxito
+            if (regalo === "Sí no deseas llevar regalo físico, puedes llevar lluvia de sobres") {
+                messageDiv.innerHTML = `
+                    <div style="background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 15px; border-radius: 5px;">
+                        <h3>¡Gracias ${nombre}!</h3>
+                        <p>Has seleccionado participar en la <strong>Lluvia de Sobres</strong></p>
+                        <p>Te esperamos en el Baby Shower de Benjamín ❤️</p>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 15px; border-radius: 5px;">
+                        <h3>¡Felicidades ${nombre}!</h3>
+                        <p>Has seleccionado: <strong>${regalo}</strong></p>
+                        <p>Te esperamos en el Baby Shower de Benjamín ❤️</p>
+                    </div>
+                `;
+            }
+            messageDiv.style.display = 'block';
+            
+            // Actualizar lista de opciones
+            cargarOpciones();
+            // Limpiar formulario
+            document.getElementById('nombre').value = '';
+        }
+
+        // Cargar todos los registros (para admin)
+        function cargarRegistros() {
+            const db = JSON.parse(localStorage.getItem(DB_NAME)) || { selecciones: [] };
+            const registroBody = document.getElementById('registro-body');
+            
+            registroBody.innerHTML = '';
+            
+            db.selecciones.forEach((seleccion, index) => {
+                const row = document.createElement('tr');
+                row.style.borderBottom = '1px solid #ddd';
+                
+                // Estilo diferente para lluvia de sobres
+                if (seleccion.regalo === "Sí no deseas llevar regalo físico, puedes llevar lluvia de sobres") {
+                    row.style.backgroundColor = '#fff3cd';
+                }
+                
+                row.innerHTML = `
+                    <td style="padding: 10px;">${index + 1}</td>
+                    <td style="padding: 10px;">${seleccion.persona}</td>
+                    <td style="padding: 10px;">${seleccion.regalo}</td>
+                    <td style="padding: 10px;">${new Date(seleccion.fecha).toLocaleString()}</td>
+                `;
+                registroBody.appendChild(row);
+            });
+        }
+
+        // Exportar a CSV
+        function exportarCSV() {
+            const db = JSON.parse(localStorage.getItem(DB_NAME)) || { selecciones: [] };
+            let csv = 'No.,Persona,Opción Seleccionada,Fecha y Hora\n';
+            
+            db.selecciones.forEach((seleccion, index) => {
+                csv += `${index + 1},"${seleccion.persona}","${seleccion.regalo}","${new Date(seleccion.fecha).toLocaleString()}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `registro_baby_shower_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', () => {
+            initDB();
+            cargarOpciones();
+            
+            // Mostrar mensaje de bienvenida
+            alert("Bienvenido, para empezar registra tu nombre y selecciona una opción de regalo para el Baby Shower de Benjamín.");
+            
+            // Evento del botón de confirmación
+            document.getElementById('submit-btn').addEventListener('click', registrarSeleccion);
+            
+            // Configuración del panel admin
+            const adminBtn = document.getElementById('admin-btn');
+            const adminModal = document.getElementById('admin-modal');
+            const adminPanel = document.getElementById('admin-panel');
+            const adminLoginBtn = document.getElementById('admin-login-btn');
+            const adminCancelBtn = document.getElementById('admin-cancel-btn');
+            const exportCsvBtn = document.getElementById('export-csv');
+            const refreshBtn = document.getElementById('refresh-btn');
+            
+            // Credenciales admin 
+            const ADMIN_CREDENTIALS = {
+                user: "admin",
+                pass: "Aadmin.123" 
+            };
+            
+            // Mostrar modal admin
+            adminBtn.addEventListener('click', () => {
+                adminModal.style.display = 'flex';
+            });
+            
+            // Ocultar modal admin
+            adminCancelBtn.addEventListener('click', () => {
+                adminModal.style.display = 'none';
+                document.getElementById('admin-user').value = '';
+                document.getElementById('admin-pass').value = '';
+            });
+            
+            // Validar login admin
+            adminLoginBtn.addEventListener('click', () => {
+                const user = document.getElementById('admin-user').value.trim();
+                const pass = document.getElementById('admin-pass').value.trim();
+                
+                if (user === ADMIN_CREDENTIALS.user && pass === ADMIN_CREDENTIALS.pass) {
+                    adminModal.style.display = 'none';
+                    adminPanel.style.display = 'block';
+                    document.getElementById('admin-user').value = '';
+                    document.getElementById('admin-pass').value = '';
+                    cargarRegistros();
+                } else {
+                    alert("Credenciales incorrectas. Intente nuevamente.");
+                }
+            });
+            
+            // Exportar a CSV
+            exportCsvBtn.addEventListener('click', exportarCSV);
+            
+            // Actualizar lista
+            refreshBtn.addEventListener('click', cargarRegistros);
+        });
+    </script>
+</body>
+</html>
